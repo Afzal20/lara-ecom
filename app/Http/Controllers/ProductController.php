@@ -13,13 +13,9 @@ class ProductController extends Controller
     {
         $products = ProductModel::all();
 
-        if ($request->wantsJson() || $request->header('X-Inertia')) {
-            return Inertia::render('products/Index', [
-                'products' => $products
-            ]);
-        }
-
-        return view('products.index', compact('products'));
+        return Inertia::render('products/Index', [
+            'products' => $products
+        ]);
     }
 
     public function create()
@@ -70,6 +66,15 @@ class ProductController extends Controller
 
         // Redirect or return response as needed
         return redirect()->route('products.index')->with('success', 'Product created successfully!');
+    }
+
+    public function show($id)
+    {
+        $product = ProductModel::findOrFail($id);
+        
+        return Inertia::render('products/Show', [
+            'product' => $product
+        ]);
     }
 
     public function destroy($id) {
