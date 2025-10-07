@@ -1,6 +1,7 @@
 import ProductsCard from "./components/ProductsCard"
 import { Head } from "@inertiajs/react"
 import NaNvbar from "@/components/Navebar"
+import LayoutWithCart from "@/layouts/LayoutWithCart"
 
 interface Product {
   id: number;
@@ -20,7 +21,7 @@ interface IndexProps {
 // Assuming `products` is passed as a prop or fetched from a data source
 const Index = ({ products = [] }: IndexProps) => {
   return (
-    <>
+    <LayoutWithCart>
       <NaNvbar />
       <Head title="Products" />
       <div className="container mx-auto px-4 py-8">        
@@ -40,7 +41,7 @@ const Index = ({ products = [] }: IndexProps) => {
           </div>
         )}
       </div>
-    </>
+    </LayoutWithCart>
   )
 }
 

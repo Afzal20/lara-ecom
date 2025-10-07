@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Navebar from "@/components/Navebar"
+import { useCart } from "@/hooks/useCart"
+import LayoutWithCart from "@/layouts/LayoutWithCart"
 
 interface CartItem {
     id: number;
@@ -24,6 +26,7 @@ const CartIndex = () => {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [loading, setLoading] = useState(true)
     const [updating, setUpdating] = useState<number | null>(null)
+    const { refreshCart } = useCart()
 
     // Helper function to safely convert price to number
     const getPrice = (price: string | number): number => {
@@ -84,6 +87,8 @@ const CartIndex = () => {
                         item.id === itemId ? { ...item, quantity: newQuantity } : item
                     )
                 )
+                // Refresh cart count
+                await refreshCart()
             }
         } catch (error) {
             console.error('Error updating quantity:', error)
@@ -104,6 +109,8 @@ const CartIndex = () => {
 
             if (response.ok) {
                 setCartItems(items => items.filter(item => item.id !== itemId))
+                // Refresh cart count
+                await refreshCart()
             }
         } catch (error) {
             console.error('Error removing item:', error)
@@ -146,7 +153,7 @@ const CartIndex = () => {
     }
 
     return (
-        <>
+        <LayoutWithCart>
             <Navebar />
             <Head title="Shopping Cart" />
             <div className="container mx-auto px-4 py-8">
@@ -271,7 +278,7 @@ const CartIndex = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </LayoutWithCart>
     )
 }
 

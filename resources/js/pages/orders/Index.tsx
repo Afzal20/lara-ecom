@@ -5,6 +5,7 @@ import { Package, Clock, CheckCircle, Truck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Navebar from "@/components/Navebar"
+import LayoutWithCart from "@/layouts/LayoutWithCart"
 
 interface Order {
     id: number;
@@ -105,7 +106,7 @@ const OrdersIndex = () => {
     }
 
     return (
-        <>
+        <LayoutWithCart>
             <Navebar />
             <Head title="My Orders" />
             <div className="container mx-auto px-4 py-8">
@@ -163,7 +164,7 @@ const OrdersIndex = () => {
                     </div>
                 )}
             </div>
-        </>
+        </LayoutWithCart>
     )
 }
 

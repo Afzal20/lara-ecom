@@ -13,10 +13,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useCart } from "@/hooks/useCart"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import Navebar from "@/components/Navebar"
+import LayoutWithCart from "@/layouts/LayoutWithCart"
 
 interface CartItem {
     id: number;
@@ -54,6 +56,7 @@ const CheckoutPage = () => {
     const [loading, setLoading] = useState(true)
     const [showAddressForm, setShowAddressForm] = useState(false)
     const [processing, setProcessing] = useState(false)
+    const { refreshCart } = useCart()
 
     // Helper function to safely convert price to number
     const getPrice = (price: string | number): number => {
@@ -190,6 +193,8 @@ const CheckoutPage = () => {
 
             if (response.ok) {
                 const orderData = await response.json()
+                // Refresh cart count since order completion should clear cart
+                await refreshCart()
                 router.visit('/orders', { 
                     onSuccess: () => {
                         // Show success message or redirect
@@ -221,7 +226,7 @@ const CheckoutPage = () => {
     }
 
     return (
-        <>
+        <LayoutWithCart>
             <Navebar />
             <Head title="Checkout" />
             <div className="container mx-auto px-4 py-8">
@@ -527,7 +532,7 @@ const CheckoutPage = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </LayoutWithCart>
     )
 }
 

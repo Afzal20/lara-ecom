@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Navebar from "@/components/Navebar"
+import { useCart } from "@/hooks/useCart"
+import LayoutWithCart from "@/layouts/LayoutWithCart"
 
 interface Product {
     id: number;
@@ -59,6 +61,7 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
     const [quantity, setQuantity] = useState(1)
     const [isAddingToCart, setIsAddingToCart] = useState(false)
     const [cartMessage, setCartMessage] = useState('')
+    const { refreshCart } = useCart()
 
     // Handle image navigation
     const nextImage = () => {
@@ -143,6 +146,8 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
             if (response.ok) {
                 const data = await response.json()
                 setCartMessage('Product added to cart successfully!')
+                // Refresh cart count
+                await refreshCart()
                 setTimeout(() => setCartMessage(''), 3000)
             } else {
                 setCartMessage('Failed to add product to cart')
@@ -156,7 +161,7 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
     }
 
     return (
-        <>
+        <LayoutWithCart>
             <Navebar />
             <Head title={product.product_title || 'Product Details'} />
             
@@ -466,7 +471,7 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
                     </div>
                 )}
             </div>
-        </>
+        </LayoutWithCart>
     )
 }
 

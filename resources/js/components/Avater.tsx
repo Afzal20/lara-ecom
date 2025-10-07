@@ -25,10 +25,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import ThemeSwitch from "./themeSwitch"
 import { Badge } from "@/components/ui/badge"
+import { useCart } from "@/hooks/useCart"
 
 
 export default function Avater() {
   const { auth } = usePage<SharedData>().props
+  const { cartCount } = useCart()
 
   const handleLogout = () => {
     router.post('/logout')
@@ -58,10 +60,11 @@ export default function Avater() {
             </AvatarFallback>
           </Avatar>
           {/* Cart count badge - only show if there are items */}
-          {/* You can replace this with actual cart count from your state/context */}
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full border-2 border-background bg-destructive text-foreground text-xs flex items-center justify-center p-0">
-            3
-          </Badge>
+          {cartCount > 0 && (
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full border-2 border-background bg-destructive text-foreground text-xs flex items-center justify-center p-0">
+              {cartCount}
+            </Badge>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64" align="end">
@@ -90,9 +93,11 @@ export default function Avater() {
             <Link href="/cart" className="cursor-pointer">
               <ShoppingCartIcon size={16} className="opacity-60" aria-hidden="true" />
               <span>Cart</span>
-              <Badge variant="secondary" className="ml-auto h-5 w-5 rounded-full text-xs">
-                3
-              </Badge>
+              {cartCount > 0 && (
+                <Badge variant="secondary" className="ml-auto h-5 w-5 rounded-full text-xs">
+                  {cartCount}
+                </Badge>
+              )}
             </Link>
           </DropdownMenuItem>
           
