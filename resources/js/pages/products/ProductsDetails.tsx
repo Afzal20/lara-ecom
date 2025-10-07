@@ -127,10 +127,26 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
         setCartMessage('')
 
         try {
-            // Simulate API call - replace with actual implementation
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            setCartMessage('Product added to cart successfully!')
-            setTimeout(() => setCartMessage(''), 3000)
+            const response = await fetch('/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    quantity: quantity,
+                    price: discountedPrice
+                })
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setCartMessage('Product added to cart successfully!')
+                setTimeout(() => setCartMessage(''), 3000)
+            } else {
+                setCartMessage('Failed to add product to cart')
+            }
         } catch (error) {
             console.error('Error adding to cart:', error)
             setCartMessage('An error occurred. Please try again.')

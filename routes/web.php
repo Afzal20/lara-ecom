@@ -10,10 +10,24 @@ use App\Http\Controllers\PaymentAddressControllers;
 Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
+// Public cart and checkout pages (will redirect to login if not authenticated)
+Route::get('/cart', function () {
+    return Inertia::render('cart/Index');
+})->name('cart.index');
+
+Route::get('/checkout', function () {
+    return Inertia::render('checkout/Index');
+})->middleware('auth')->name('checkout.index');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+    
+    // Orders page
+    Route::get('/orders', function () {
+        return Inertia::render('orders/Index');
+    })->name('orders.index');
     
     // Cart routes
     Route::get('/cart', [CartControllers::class, 'index']);
