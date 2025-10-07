@@ -3,6 +3,7 @@ import {
   ShoppingCartIcon,
   UserIcon,
   SettingsIcon,
+  PackageIcon,
 } from "lucide-react"
 import { Link, usePage, router } from "@inertiajs/react"
 import type { SharedData } from "@/types"
@@ -95,19 +96,19 @@ export default function Avater() {
             </Link>
           </DropdownMenuItem>
           
+          {/* Orders */}
+          <DropdownMenuItem asChild>
+            <Link href="/orders" className="cursor-pointer">
+              <PackageIcon size={16} className="opacity-60" aria-hidden="true" />
+              <span>Orders</span>
+            </Link>
+          </DropdownMenuItem>
           
           {/* Profile/Settings */}
           <DropdownMenuItem asChild>
             <Link href="/settings/profile" className="cursor-pointer">
               <UserIcon size={16} className="opacity-60" aria-hidden="true" />
               <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem asChild>
-            <Link href="/settings/password" className="cursor-pointer">
-              <SettingsIcon size={16} className="opacity-60" aria-hidden="true" />
-              <span>Password</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
