@@ -16,12 +16,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import Navebar from "@/components/Navebar"
 
 interface CartItem {
     id: number;
     product_id: number;
     quantity: number;
-    price: number;
+    price: string | number; // Price comes as string from Laravel API
     product: {
         id: number;
         product_title: string;
@@ -54,6 +55,11 @@ const CheckoutPage = () => {
     const [showAddressForm, setShowAddressForm] = useState(false)
     const [processing, setProcessing] = useState(false)
 
+    // Helper function to safely convert price to number
+    const getPrice = (price: string | number): number => {
+        return typeof price === 'string' ? parseFloat(price) : price;
+    }
+
     // Address form state
     const [addressForm, setAddressForm] = useState({
         first_name: "",
@@ -74,9 +80,27 @@ const CheckoutPage = () => {
         const fetchData = async () => {
             try {
                 const [cartResponse, addressResponse] = await Promise.all([
-                    fetch('/cart'),
-                    fetch('/addresses')
+                    fetch('/api/cart'),
+                    fetch('/api/addresses')
                 ])
+                
+                // Check if responses are successful and contain JSON
+                if (!cartResponse.ok || !addressResponse.ok) {
+                    // If unauthorized, redirect to login
+                    if (cartResponse.status === 401 || addressResponse.status === 401) {
+                        window.location.href = '/login'
+                        return
+                    }
+                    throw new Error('Failed to fetch data')
+                }
+                
+                // Check if response is actually JSON
+                const cartContentType = cartResponse.headers.get('content-type')
+                const addressContentType = addressResponse.headers.get('content-type')
+                
+                if (!cartContentType?.includes('application/json') || !addressContentType?.includes('application/json')) {
+                    throw new Error('Invalid response format')
+                }
                 
                 const cartData = await cartResponse.json()
                 const addressData = await addressResponse.json()
@@ -98,7 +122,7 @@ const CheckoutPage = () => {
     }, [])
 
     // Calculate totals
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const subtotal = cartItems.reduce((sum, item) => sum + (getPrice(item.price) * item.quantity), 0)
     const tax = 0
     const total = subtotal + tax
 
@@ -107,7 +131,7 @@ const CheckoutPage = () => {
         e.preventDefault()
         
         try {
-            const response = await fetch('/addresses', {
+            const response = await fetch('/api/addresses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,7 +174,7 @@ const CheckoutPage = () => {
         const fullAddress = `${selectedAddressData.address_1}, ${selectedAddressData.city}, ${selectedAddressData.state} ${selectedAddressData.postal_code}, ${selectedAddressData.country}`
 
         try {
-            const response = await fetch('/orders', {
+            const response = await fetch('/api/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -187,14 +211,18 @@ const CheckoutPage = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Loading...</div>
-            </div>
+            <>
+                <Navebar />
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center">Loading...</div>
+                </div>
+            </>
         )
     }
 
     return (
         <>
+            <Navebar />
             <Head title="Checkout" />
             <div className="container mx-auto px-4 py-8">
                 {/* Progress Steps */}
@@ -248,7 +276,7 @@ const CheckoutPage = () => {
                                                 <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold">${(item.price * item.quantity).toFixed(2)}</p>
+                                                <p className="font-bold">${(getPrice(item.price) * item.quantity).toFixed(2)}</p>
                                             </div>
                                         </div>
                                     ))}

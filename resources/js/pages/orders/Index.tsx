@@ -4,16 +4,17 @@ import { Package, Clock, CheckCircle, Truck } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Navebar from "@/components/Navebar"
 
 interface Order {
     id: number;
     status: string;
-    total_amount: number;
+    total_amount: string | number; // Amount comes as string from Laravel API
     created_at: string;
     items: {
         id: number;
         quantity: number;
-        price: number;
+        price: string | number; // Price comes as string from Laravel API
         product: {
             product_title: string;
             thumbnail: string;
@@ -25,10 +26,31 @@ const OrdersIndex = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState(true)
 
+    // Helper function to safely convert price to number
+    const getPrice = (price: string | number): number => {
+        return typeof price === 'string' ? parseFloat(price) : price;
+    }
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch('/orders')
+                const response = await fetch('/api/orders')
+                
+                if (!response.ok) {
+                    // If unauthorized, redirect to login
+                    if (response.status === 401) {
+                        window.location.href = '/login'
+                        return
+                    }
+                    throw new Error('Failed to fetch orders')
+                }
+                
+                // Check if response is actually JSON
+                const contentType = response.headers.get('content-type')
+                if (!contentType?.includes('application/json')) {
+                    throw new Error('Invalid response format')
+                }
+                
                 const data = await response.json()
                 setOrders(data)
             } catch (error) {
@@ -73,14 +95,18 @@ const OrdersIndex = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Loading orders...</div>
-            </div>
+            <>
+                <Navebar />
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center">Loading orders...</div>
+                </div>
+            </>
         )
     }
 
     return (
         <>
+            <Navebar />
             <Head title="My Orders" />
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold mb-8">My Orders</h1>
@@ -105,7 +131,7 @@ const OrdersIndex = () => {
                                             </Badge>
                                         </CardTitle>
                                         <div className="text-right">
-                                            <p className="text-2xl font-bold">${order.total_amount.toFixed(2)}</p>
+                                            <p className="text-2xl font-bold">${getPrice(order.total_amount).toFixed(2)}</p>
                                             <p className="text-sm text-gray-600">
                                                 {new Date(order.created_at).toLocaleDateString()}
                                             </p>
@@ -126,7 +152,7 @@ const OrdersIndex = () => {
                                                     <p className="text-xs text-gray-600">Quantity: {item.quantity}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                                                    <p className="font-semibold">${(getPrice(item.price) * item.quantity).toFixed(2)}</p>
                                                 </div>
                                             </div>
                                         ))}

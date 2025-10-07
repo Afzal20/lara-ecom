@@ -10,41 +10,40 @@ use App\Http\Controllers\PaymentAddressControllers;
 Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
-// Public cart and checkout pages (will redirect to login if not authenticated)
-Route::get('/cart', function () {
-    return Inertia::render('cart/Index');
-})->name('cart.index');
-
-Route::get('/checkout', function () {
-    return Inertia::render('checkout/Index');
-})->middleware('auth')->name('checkout.index');
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
     
-    // Orders page
+    // Cart page and API routes
+    Route::get('/cart', function () {
+        return Inertia::render('cart/Index');
+    })->name('cart.index');
+    
+    // Cart API routes
+    Route::get('/api/cart', [CartControllers::class, 'index'])->name('cart.api.index');
+    Route::post('/api/cart', [CartControllers::class, 'store'])->name('cart.api.store');
+    Route::put('/api/cart/{id}', [CartControllers::class, 'update'])->name('cart.api.update');
+    Route::delete('/api/cart/{id}', [CartControllers::class, 'destroy'])->name('cart.api.destroy');
+    
+    // Checkout page
+    Route::get('/checkout', function () {
+        return Inertia::render('checkout/Index');
+    })->name('checkout.index');
+    
+    // Orders page and API routes
     Route::get('/orders', function () {
         return Inertia::render('orders/Index');
     })->name('orders.index');
+    Route::get('/api/orders', [OrderControllers::class, 'index'])->name('orders.api.index');
+    Route::post('/api/orders', [OrderControllers::class, 'store'])->name('orders.api.store');
+    Route::get('/api/orders/{id}', [OrderControllers::class, 'show'])->name('orders.api.show');
     
-    // Cart routes
-    Route::get('/cart', [CartControllers::class, 'index']);
-    Route::post('/cart', [CartControllers::class, 'store']);
-    Route::put('/cart/{id}', [CartControllers::class, 'update']);
-    Route::delete('/cart/{id}', [CartControllers::class, 'destroy']);
-    
-    // Order routes
-    Route::get('/orders', [OrderControllers::class, 'index']);
-    Route::post('/orders', [OrderControllers::class, 'store']);
-    Route::get('/orders/{id}', [OrderControllers::class, 'show']);
-    
-    // Address routes
-    Route::get('/addresses', [PaymentAddressControllers::class, 'index']);
-    Route::post('/addresses', [PaymentAddressControllers::class, 'store']);
-    Route::put('/addresses/{id}', [PaymentAddressControllers::class, 'update']);
-    Route::delete('/addresses/{id}', [PaymentAddressControllers::class, 'destroy']);
+    // Address API routes
+    Route::get('/api/addresses', [PaymentAddressControllers::class, 'index'])->name('addresses.api.index');
+    Route::post('/api/addresses', [PaymentAddressControllers::class, 'store'])->name('addresses.api.store');
+    Route::put('/api/addresses/{id}', [PaymentAddressControllers::class, 'update'])->name('addresses.api.update');
+    Route::delete('/api/addresses/{id}', [PaymentAddressControllers::class, 'destroy'])->name('addresses.api.destroy');
 });
 
 require __DIR__.'/settings.php';

@@ -127,7 +127,7 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
         setCartMessage('')
 
         try {
-            const response = await fetch('/cart', {
+            const response = await fetch('/api/cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
