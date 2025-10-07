@@ -251,7 +251,7 @@ laravel-ecommerce/
 - **Tailwind CSS** - Utility-first CSS framework
 - **ShadcN UI** - Component library
 
-## 🔧 Configuration
+## Configuration
 
 ### Database
 
@@ -325,7 +325,7 @@ APP_DEBUG=false
 APP_URL=https://yourdomain.com
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Clear All Caches
 
