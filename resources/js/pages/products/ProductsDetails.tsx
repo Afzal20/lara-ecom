@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import Navebar from "@/components/Navebar"
 
 interface Product {
     id: number;
@@ -140,6 +141,7 @@ function ProductsDetails({ product }: ProductsDetailsProps) {
 
     return (
         <>
+            <Navebar />
             <Head title={product.product_title || 'Product Details'} />
             
             <div className="container mx-auto px-4 py-8">
