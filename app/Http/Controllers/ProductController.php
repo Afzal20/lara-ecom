@@ -72,7 +72,7 @@ class ProductController extends Controller
     {
         $product = ProductModel::findOrFail($id);
         
-        return Inertia::render('products/Show', [
+        return Inertia::render('products/ProductsDetails', [
             'product' => $product
         ]);
     }

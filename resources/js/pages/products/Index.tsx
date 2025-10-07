@@ -1,5 +1,6 @@
 import ProductsCard from "./components/ProductsCard"
 import { Head } from "@inertiajs/react"
+import NaNvbar from "@/components/Navebar"
 
 interface Product {
   id: number;
@@ -20,6 +21,7 @@ interface IndexProps {
 const Index = ({ products = [] }: IndexProps) => {
   return (
     <>
+      <NaNvbar />
       <Head title="Products" />
       <div className="container mx-auto px-4 py-8">        
         {products.length > 0 ? (
